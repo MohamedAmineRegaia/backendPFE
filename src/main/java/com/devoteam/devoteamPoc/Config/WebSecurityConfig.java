@@ -38,7 +38,17 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/test/anonymous", "/test/anonymous/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/public/{username}/forgot-Password").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/all").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/users/add-user").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/roles").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/Staff-Projet/affecter").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/users/update-password").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/staff-details").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/staff-details/details/manager").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/users/{userId}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "Staff-Certification/update/{id}").hasRole("STAFF")
+
+
+
                         .requestMatchers(HttpMethod.GET, "/test/admin", "/test/admin/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.GET, "/test/user").hasAnyRole(GENERAL)
                         .anyRequest().authenticated()

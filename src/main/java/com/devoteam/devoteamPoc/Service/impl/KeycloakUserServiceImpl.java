@@ -4,19 +4,16 @@ package com.devoteam.devoteamPoc.Service.impl;
 import com.devoteam.devoteamPoc.Config.JwtAuthConverter;
 import com.devoteam.devoteamPoc.Dto.UserRegistrationRecord;
 import com.devoteam.devoteamPoc.Service.keycloak.KeycloakUserService;
-import com.sun.xml.xsom.impl.scd.Step;
 import jakarta.ws.rs.core.Response;
-import org.apache.catalina.User;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
-import org.keycloak.common.util.CollectionUtil;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -46,7 +43,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
     }
 
     @Override
-    public UserRegistrationRecord createUser(UserRegistrationRecord userRegistrationRecord) {
+    public String createUser(UserRegistrationRecord userRegistrationRecord) {
 
 
         UserRepresentation user=new UserRepresentation();
@@ -91,10 +88,10 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
 
 
 
-            return userRegistrationRecord;
+            return "user add succesfully ";
         }
 
-        return null;
+        return "error";
     }
 
     private UsersResource getUsersResource() {
@@ -188,6 +185,14 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
 
 
     }
+    private List<String> getUserRealmRoles(String userId) {
+        UserResource userResource = getUsersResource().get(userId);
+        List<RoleRepresentation> roles = userResource.roles().realmLevel().listAll();
+        return roles.stream()
+                .map(RoleRepresentation::getName)
+                .filter(roleName -> roleName.equals("ADMIN") || roleName.equals("MANAGER") || roleName.equals("STAFF") || roleName.equals("COMMERCIAL"))
+                .collect(Collectors.toList());
+    }
 
     @Override
     public List<UserRepresentation> getAllUsers() {
@@ -196,16 +201,12 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
 
         List<UserRepresentation> userList = usersResource.list();
         for (UserRepresentation user : userList) {
-            UserResource userResource = usersResource.get(user.getId());
-            UserRepresentation fullUser = userResource.toRepresentation();
+            String userId = user.getId();
+            List<String> realmRoles = getUserRealmRoles(userId);
 
-            // Récupérer les realmRoles de la représentation d'utilisateur
-            List<String> realmRoles = fullUser.getRealmRoles();
-
-            // Ajouter les realmRoles à la représentation d'utilisateur si nécessaire
+           // System.out.print(realmRoles);
             user.setRealmRoles(realmRoles);
-
-            allUsers.add(fullUser);
+            allUsers.add(user);
         }
 
         return allUsers;

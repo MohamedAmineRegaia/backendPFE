@@ -33,8 +33,9 @@ public class KeycloakUserAPi {
         this.jwtAuthConverter = jwtAuthConverter;
     }
 
-    @PostMapping
-    public UserRegistrationRecord createUser(@RequestBody UserRegistrationRecord userRegistrationRecord){
+    @PostMapping("/add-user")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String createUser(@RequestBody UserRegistrationRecord userRegistrationRecord){
 
         return keycloakUserService.createUser(userRegistrationRecord);
 
