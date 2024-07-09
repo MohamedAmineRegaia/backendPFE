@@ -65,7 +65,12 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         user.setCredentials(list);
         Map<String, List<String>> attributes = new HashMap<>();
         attributes.put("disponibilite", Collections.singletonList(userRegistrationRecord.disponibilite()));
-        attributes.put("autreAttribut", Collections.singletonList(userRegistrationRecord.autreAttribut()));
+        attributes.put("profession", Collections.singletonList(userRegistrationRecord.profession()));
+        attributes.put("date_deb_projet", Collections.singletonList(userRegistrationRecord.date_deb_projet().toString()));
+        attributes.put("date_fin_projet", Collections.singletonList(userRegistrationRecord.date_fin_projet().toString()));
+
+
+
 
         // Attribution des attributs à l'utilisateur
         user.setAttributes(attributes);
@@ -93,6 +98,31 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
 
         return "error";
     }
+
+
+    @Override
+    public String updateUser(String userId, UserRegistrationRecord userRegistrationRecord) {
+        // Récupération de l'utilisateur par userId
+        UsersResource usersResource = getUsersResource();
+        UserResource userResource = usersResource.get(userId);
+        UserRepresentation user = userResource.toRepresentation();
+
+        // Mise à jour des champs
+        user.setUsername(userRegistrationRecord.username());
+        user.setEmail(userRegistrationRecord.email());
+        user.setFirstName(userRegistrationRecord.firstName());
+        user.setLastName(userRegistrationRecord.lastName());
+        user.singleAttribute("disponibilite", userRegistrationRecord.disponibilite());
+        user.singleAttribute("profession", userRegistrationRecord.profession());
+        user.singleAttribute("date_deb_projet", userRegistrationRecord.date_deb_projet().toString());
+        user.singleAttribute("date_fin_projet", userRegistrationRecord.date_fin_projet().toString());
+
+        // Mise à jour de l'utilisateur dans Keycloak
+        userResource.update(user);
+
+        return "User updated successfully";
+    }
+
 
     private UsersResource getUsersResource() {
         RealmResource realm1 = keycloak.realm(realm);
@@ -212,30 +242,6 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         return allUsers;
     }
 
-
-
-
-    //SELECT
-//    ue.ID AS ID_user,
-//    ue.EMAIL,
-//    ue.EMAIL_VERIFIED,
-//    ue.FIRST_NAME,
-//    ue.LAST_NAME,
-//    ue.USERNAME,
-//    GROUP_CONCAT(kr.NAME SEPARATOR ', ') AS roles,
-//    GROUP_CONCAT(CONCAT(ua.NAME, ': ', ua.VALUE) SEPARATOR ', ') AS user_attributes
-//FROM
-//    USER_ENTITY ue
-//LEFT JOIN
-//    USER_ATTRIBUTE ua ON ue.ID = ua.USER_ID
-//LEFT JOIN
-//    USER_ROLE_MAPPING rm ON ue.ID = rm.USER_ID
-//LEFT JOIN
-//    KEYCLOAK_ROLE kr ON rm.ROLE_ID = kr.ID
-//WHERE
-//    ue.ID <> '73afb3d6-06e0-447e-aa57-d1ee19fb6530'
-//GROUP BY
-//    ue.ID;
     @Override
 public List<UserRepresentation> getAllUsersWithRolesAndAttributes() {
     List<UserRepresentation> usersWithRolesAndAttributes = new ArrayList<>();
@@ -305,5 +311,26 @@ public List<UserRepresentation> getAllUsersWithRolesAndAttributes() {
 
     return usersWithRolesAndAttributes;
 }
+
+
+@Override
+    public UserRepresentation getUserByIdForAFFECTATION(String userId) {
+        UserResource userResource = getUserResource(userId);
+        UserRepresentation userRepresentation = userResource.toRepresentation();
+
+        // Ajouter des informations supplémentaires si nécessaire
+        List<String> roles = getUserRealmRoles(userId);
+        userRepresentation.setRealmRoles(roles);
+
+        // Ajouter d'autres attributs personnalisés si nécessaire
+        Map<String, List<String>> attributes = userRepresentation.getAttributes();
+        attributes.put("disponibilite", userRepresentation.getAttributes().get("disponibilite"));
+        attributes.put("profession", userRepresentation.getAttributes().get("profession"));
+        attributes.put("date_deb_projet", userRepresentation.getAttributes().get("date_deb_projet"));
+        attributes.put("date_fin_projet", userRepresentation.getAttributes().get("date_fin_projet"));
+        userRepresentation.setAttributes(attributes);
+
+        return userRepresentation;
+    }
 
 }

@@ -21,14 +21,27 @@ public class visaController {
 
 
     @PostMapping("/ajouter")
-    public String ajouterVisa(@RequestBody VisaDTO visaDTO , Principal principal ) {
-            return visaService.addVisa(visaDTO, principal.getName());
+    public String ajouterVisa(@RequestBody VisaDTO visaDTO, Principal principal) {
+        return visaService.addVisa(visaDTO, principal.getName());
     }
+
     @GetMapping("/affichage")
-    public ResponseEntity<List<VisaDTO>> getVisaByUserId (Principal principal) {
+    public ResponseEntity<List<VisaDTO>> getVisaByUserId(Principal principal) {
         List<VisaDTO> visaDTOList = visaService.getVisaByUserId(principal.getName());
         return ResponseEntity.ok().body(visaDTOList);
     }
+    @GetMapping("/affichage-visa/{userId}")
+    public ResponseEntity<List<VisaDTO>> getVisaByUserIdForManager(@PathVariable String userId) {
+        System.out.println("Fetching visa for userId: " + userId); // Log
+        List<VisaDTO> visaDTOList = visaService.getVisaByUserId(userId);
+        if (visaDTOList == null || visaDTOList.isEmpty()) {
+            System.out.println("No visa found for userId: " + userId); // Log
+            return ResponseEntity.noContent().build();
+        }
+        System.out.println("Visa found for userId: " + userId); // Log
+        return ResponseEntity.ok().body(visaDTOList);
+    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateVisa(@PathVariable Long id, @RequestBody VisaDTO visaDTO) {
         try {
@@ -37,5 +50,12 @@ public class visaController {
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteVisa(@PathVariable Long id) {
+
+        visaService.deleteVisa(id);
+        return "visa deleted";
     }
 }

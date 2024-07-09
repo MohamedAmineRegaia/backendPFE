@@ -9,5 +9,6 @@ public interface StaffCertificationService {
     String addCertification(StaffCertificationDTO staffCertificationDTO,String userId);
     List<StaffCertificationDTO> getStaffCertificationByUserId(String userId);
     String updateCertification(Long id, StaffCertificationDTO staffCertificationDTO);
+    String deleteCertification(Long id);
 
 }

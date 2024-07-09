@@ -68,4 +68,15 @@ public class VisaServiceImpl implements VisaService {
         }
 
     }
+
+    @Override
+    public String deleteVisa(Long id) {
+        Optional<Visa> visaOptional = visaRepository.findById(id);
+        if (visaOptional.isPresent()) {
+            visaRepository.deleteById(id);
+            return "Visa deleted successfully.";
+        } else {
+            throw new NoSuchElementException("Visa not found with id: " + id);
+        }
+    }
 }

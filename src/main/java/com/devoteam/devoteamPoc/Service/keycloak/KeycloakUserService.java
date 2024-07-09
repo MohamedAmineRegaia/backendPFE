@@ -17,5 +17,7 @@ public interface KeycloakUserService {
     void forgotPassword(String username);
     List<UserRepresentation> getAllUsers();
     List<UserRepresentation> getAllUsersWithRolesAndAttributes();
+    String updateUser(String userId, UserRegistrationRecord userRegistrationRecord);
+    UserRepresentation getUserByIdForAFFECTATION(String userId);
 
 }

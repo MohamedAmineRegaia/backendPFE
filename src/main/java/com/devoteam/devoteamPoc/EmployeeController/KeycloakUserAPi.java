@@ -40,6 +40,11 @@ public class KeycloakUserAPi {
         return keycloakUserService.createUser(userRegistrationRecord);
 
     }
+    @PutMapping("/update-user/{userId}")
+    public String updateUser(@PathVariable String userId, @RequestBody UserRegistrationRecord userRegistrationRecord) {
+        return keycloakUserService.updateUser(userId, userRegistrationRecord);
+    }
+
     @GetMapping
     public UserRepresentation getUser(Principal principal,@AuthenticationPrincipal Jwt jwt){
 
@@ -100,6 +105,12 @@ public class KeycloakUserAPi {
         } else {
             return "Impossible de récupérer le rôle de l'utilisateur";
         }
+    }
+
+
+    @GetMapping("/{userId}")
+    public UserRepresentation getUserById(@PathVariable String userId) {
+        return keycloakUserService.getUserByIdForAFFECTATION(userId);
     }
 
 }

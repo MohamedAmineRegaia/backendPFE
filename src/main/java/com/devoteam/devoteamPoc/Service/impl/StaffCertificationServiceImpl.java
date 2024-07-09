@@ -5,6 +5,7 @@ import com.devoteam.devoteamPoc.Dto.StaffProjetDTO;
 import com.devoteam.devoteamPoc.Entity.StaffCertification;
 import com.devoteam.devoteamPoc.Entity.StaffDetails;
 import com.devoteam.devoteamPoc.Entity.StaffProjet;
+import com.devoteam.devoteamPoc.Entity.Visa;
 import com.devoteam.devoteamPoc.Repo.StaffCertificationRepository;
 import com.devoteam.devoteamPoc.Repo.StaffProjectRepository;
 import com.devoteam.devoteamPoc.Service.StaffCertificationService;
@@ -67,6 +68,17 @@ public class StaffCertificationServiceImpl implements StaffCertificationService 
         } else {
             // Gérer le cas où l'objet n'est pas trouvé dans la base de données
             throw new NoSuchElementException("StaffCertification not found with id: " + id);
+        }
+    }
+
+    @Override
+    public String deleteCertification(Long id) {
+        Optional<StaffCertification> certificationOptional = staffCertificationRepository.findById(id);
+        if (certificationOptional.isPresent()) {
+            staffCertificationRepository.deleteById(id);
+            return "certif deleted successfully.";
+        } else {
+            throw new NoSuchElementException("certif not found with id: " + id);
         }
     }
 

@@ -8,4 +8,6 @@ public interface VisaService {
     String addVisa(VisaDTO visaDTO, String UserId);
     List<VisaDTO> getVisaByUserId(String userId);
     String updateVida(Long id, VisaDTO visaDTO);
+    String deleteVisa(Long id);
+
 }

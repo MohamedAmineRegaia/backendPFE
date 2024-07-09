@@ -30,6 +30,11 @@ public class StaffCertificationController {
         List<StaffCertificationDTO> staffCertificationDTOList = staffCertificationService.getStaffCertificationByUserId(principal.getName());
         return ResponseEntity.ok().body(staffCertificationDTOList);
     }
+    @GetMapping("/affichage/{userId}")
+    public ResponseEntity<List<StaffCertificationDTO>> getStaffCertificationByUserIdforManager (@PathVariable String userId) {
+        List<StaffCertificationDTO> staffCertificationDTOList = staffCertificationService.getStaffCertificationByUserId(userId);
+        return ResponseEntity.ok().body(staffCertificationDTOList);
+    }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateCertifiaction(@PathVariable Long id, @RequestBody StaffCertificationDTO staffCertificationDTO) {
@@ -39,5 +44,11 @@ public class StaffCertificationController {
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+    @DeleteMapping("/delete/{id}")
+    public String deleteCertification(@PathVariable Long id) {
+
+        staffCertificationService.deleteCertification(id);
+        return "certif deleted";
     }
 }
