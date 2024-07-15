@@ -49,10 +49,9 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "propale/historique").hasAnyRole("COMMERCIAL","MANAGER")
 
 
-
-
                         .requestMatchers(HttpMethod.GET, "/test/admin", "/test/admin/**").hasRole(ADMIN)
                         .requestMatchers(HttpMethod.GET, "/test/user").hasAnyRole(GENERAL)
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

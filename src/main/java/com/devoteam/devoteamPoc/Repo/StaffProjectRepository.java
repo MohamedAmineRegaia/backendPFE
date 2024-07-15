@@ -9,5 +9,7 @@ import java.util.List;
 @Repository
 public interface StaffProjectRepository extends JpaRepository<StaffProjet,Long> {
     List<StaffProjet> findByUserId(String userId);
+    List<StaffProjet> findByUserIdAndProjectTitle(String userId, String projectTitle);
+
 
 }

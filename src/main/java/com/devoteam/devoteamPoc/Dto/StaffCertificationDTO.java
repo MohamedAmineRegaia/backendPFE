@@ -12,6 +12,9 @@ public class StaffCertificationDTO {
 
     private String certification;
 
+
+    private byte[] image;
+
     public Long getId() {
         return id;
     }
@@ -36,5 +39,13 @@ public class StaffCertificationDTO {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 }

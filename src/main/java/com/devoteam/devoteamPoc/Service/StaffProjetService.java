@@ -11,6 +11,7 @@ public interface StaffProjetService {
         String AffecterProjet(StaffProjetDTO staffProjetDTO);
         List<StaffProjetDTO> getStaffProjectByUserId(String userId);
         String updateStaffprojet(Long id, StaffProjetDTO staffProjetDTO);
+        String deleteStaffProjectByUserIdAndProjectTitle(String userId, String projectTitle);
 
 
 }

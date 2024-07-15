@@ -44,9 +44,7 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
 
     @Override
     public String createUser(UserRegistrationRecord userRegistrationRecord) {
-
-
-        UserRepresentation user=new UserRepresentation();
+        UserRepresentation user = new UserRepresentation();
 
         user.setEnabled(true);
         user.setUsername(userRegistrationRecord.username());
@@ -58,42 +56,48 @@ public class KeycloakUserServiceImpl implements KeycloakUserService {
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
         credentialRepresentation.setValue(userRegistrationRecord.password());
         credentialRepresentation.setTemporary(false);
-        credentialRepresentation.setType(credentialRepresentation.PASSWORD);
+        credentialRepresentation.setType(CredentialRepresentation.PASSWORD);
 
         List<CredentialRepresentation> list = new ArrayList<>();
         list.add(credentialRepresentation);
         user.setCredentials(list);
+
         Map<String, List<String>> attributes = new HashMap<>();
         attributes.put("disponibilite", Collections.singletonList(userRegistrationRecord.disponibilite()));
         attributes.put("profession", Collections.singletonList(userRegistrationRecord.profession()));
-        attributes.put("date_deb_projet", Collections.singletonList(userRegistrationRecord.date_deb_projet().toString()));
-        attributes.put("date_fin_projet", Collections.singletonList(userRegistrationRecord.date_fin_projet().toString()));
 
+        if (userRegistrationRecord.date_deb_projet() != null) {
+            attributes.put("date_deb_projet", Collections.singletonList(userRegistrationRecord.date_deb_projet().toString()));
+        } else {
+            attributes.put("date_deb_projet", Collections.singletonList(""));
+        }
 
-
+        if (userRegistrationRecord.date_fin_projet() != null) {
+            attributes.put("date_fin_projet", Collections.singletonList(userRegistrationRecord.date_fin_projet().toString()));
+        } else {
+            attributes.put("date_fin_projet", Collections.singletonList(""));
+        }
 
         // Attribution des attributs à l'utilisateur
         user.setAttributes(attributes);
 
-
-
         UsersResource usersResource = getUsersResource();
-
         Response response = usersResource.create(user);
 
-        if(Objects.equals(201,response.getStatus())){
+        if (response.getStatus() == 201) {
             List<UserRepresentation> representationList = usersResource.searchByUsername(userRegistrationRecord.username(), true);
-            if(!CollectionUtils.isEmpty(representationList)){
-                UserRepresentation userRepresentation1 = representationList.stream().filter(userRepresentation -> Objects.equals(false, userRepresentation.isEmailVerified())).findFirst().orElse(null);
-                assert userRepresentation1 != null;
-                emailVerification(userRepresentation1.getId());
-                forgotPassword(userRegistrationRecord.username());
+            if (!CollectionUtils.isEmpty(representationList)) {
+                UserRepresentation userRepresentation1 = representationList.stream()
+                        .filter(userRepresentation -> !userRepresentation.isEmailVerified())
+                        .findFirst()
+                        .orElse(null);
 
+                if (userRepresentation1 != null) {
+                    emailVerification(userRepresentation1.getId());
+                    forgotPassword(userRegistrationRecord.username());
+                }
             }
-
-
-
-            return "user add succesfully ";
+            return "user add successfully";
         }
 
         return "error";

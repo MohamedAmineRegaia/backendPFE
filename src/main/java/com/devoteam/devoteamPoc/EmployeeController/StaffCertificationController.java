@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,8 +24,21 @@ public class StaffCertificationController {
     private StaffCertificationService staffCertificationService;
 
     @PostMapping("/ajouter")
-    public String ajouterCertification(@RequestBody StaffCertificationDTO staffCertificationDTO , Principal principal ) {
-        return staffCertificationService.addCertification(staffCertificationDTO, principal.getName());
+    public ResponseEntity<String> ajouterCertification(
+            @RequestParam("certification") String certification,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            Principal principal) {
+        StaffCertificationDTO staffCertificationDTO = new StaffCertificationDTO();
+        staffCertificationDTO.setCertification(certification);
+        if (image != null && !image.isEmpty()) {
+            try {
+                staffCertificationDTO.setImage(image.getBytes());
+            } catch (IOException e) {
+                return new ResponseEntity<>("Failed to process image", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        String result = staffCertificationService.addCertification(staffCertificationDTO, principal.getName());
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
     @GetMapping("/affichage")
     public ResponseEntity<List<StaffCertificationDTO>> getStaffCertificationByUserId (Principal principal) {

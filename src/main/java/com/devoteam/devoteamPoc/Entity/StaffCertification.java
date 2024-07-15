@@ -15,6 +15,10 @@ public class StaffCertification {
     @Column(name = "certification_name")
     private String Certification;
 
+    @Lob
+    @Column(name = "image", columnDefinition = "LONGBLOB")
+    private byte[] image;
+
     public Long getId() {
         return id;
     }
@@ -39,7 +43,11 @@ public class StaffCertification {
         Certification = certification;
     }
 
+    public byte[] getImage() {
+        return image;
+    }
 
-
-
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
 }

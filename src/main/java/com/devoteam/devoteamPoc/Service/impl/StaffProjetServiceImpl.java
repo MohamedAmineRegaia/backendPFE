@@ -54,7 +54,6 @@ public class StaffProjetServiceImpl implements StaffProjetService {
 
     @Override
     public String updateStaffprojet(Long id, StaffProjetDTO staffProjetDTO) {
-        // Récupérer l'objet StaffDetails correspondant à l'ID depuis le repository
         Optional<StaffProjet> staffProjetOptional = staffProjectRepository.findById(id);
 
         // Vérifier si l'objet existe dans la base de données
@@ -76,4 +75,27 @@ public class StaffProjetServiceImpl implements StaffProjetService {
             throw new NoSuchElementException("StaffDetails not found with id: " + id);
         }
     }
+
+    @Override
+    public String deleteStaffProjectByUserIdAndProjectTitle(String userId, String projectTitle) {
+        List<StaffProjet> staffProjetList = staffProjectRepository.findByUserId(userId);
+
+        // Filtrer les projets qui correspondent au projectTitle
+        List<StaffProjet> projectsToDelete = staffProjetList.stream()
+                .filter(project -> project.getProjectTitle().equals(projectTitle))
+                .collect(Collectors.toList());
+        System.out.println(projectTitle);
+        System.out.println(projectsToDelete);
+
+
+
+
+        if (!projectsToDelete.isEmpty()) {
+            staffProjectRepository.deleteAll(projectsToDelete);
+            return "Projects deleted successfully.";
+        } else {
+            throw new NoSuchElementException("No projects found for userId: " + userId + " with projectTitle: " + projectTitle);
+        }
+    }
+
 }

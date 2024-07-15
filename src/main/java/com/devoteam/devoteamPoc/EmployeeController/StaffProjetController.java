@@ -28,4 +28,10 @@ public class StaffProjetController {
         return ResponseEntity.ok().body(staffProjetDTOList);
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteStaffProjectByUserIdAndProjectTitle(@RequestParam String userId, @RequestParam String projectTitle) {
+        String result = staffProjetService.deleteStaffProjectByUserIdAndProjectTitle(userId, projectTitle);
+        return ResponseEntity.ok(result);
+    }
+
 }

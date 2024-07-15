@@ -2,6 +2,7 @@ package com.devoteam.devoteamPoc.Service.impl;
 
 import com.devoteam.devoteamPoc.Dto.ProjectAssignmentDTO;
 import com.devoteam.devoteamPoc.Dto.PropaleDTO;
+import com.devoteam.devoteamPoc.EmployeeController.NotificationController;
 import com.devoteam.devoteamPoc.Entity.HistoryEntry;
 import com.devoteam.devoteamPoc.Entity.ProjectAssignment;
 import com.devoteam.devoteamPoc.Entity.Propale;
@@ -35,8 +36,12 @@ public class PropaleServiceIMPL implements PropaleService {
     private String realm;
     private Keycloak keycloak;
 
-    public PropaleServiceIMPL(Keycloak keycloak) {
+    private NotificationController notificationController;
+
+    public PropaleServiceIMPL(Keycloak keycloak, NotificationController notificationController) {
+
         this.keycloak = keycloak;
+        this.notificationController= notificationController;
     }
 
     public UserRepresentation getUserById(String userId) {
@@ -323,6 +328,8 @@ public class PropaleServiceIMPL implements PropaleService {
 
             propale.getProjectAssignments().add(assignment);
             propaleRepository.save(propale);
+
+            notificationController.notifyUser(userId, "You have been assigned to a new project.");
 
             return "User assigned to project successfully.";
         } else {

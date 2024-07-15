@@ -24,11 +24,11 @@ public class StaffCertificationServiceImpl implements StaffCertificationService 
     @Autowired
     private StaffCertificationRepository staffCertificationRepository;
     @Override
-    public String addCertification(StaffCertificationDTO staffCertificationDTO , String userId) {
-
+    public String addCertification(StaffCertificationDTO staffCertificationDTO, String userId) {
         StaffCertification staffCertification = new StaffCertification();
         staffCertification.setUserId(userId);
         staffCertification.setCertification(staffCertificationDTO.getCertification());
+        staffCertification.setImage(staffCertificationDTO.getImage());
 
         staffCertificationRepository.save(staffCertification);
         return "Certification added";
@@ -36,7 +36,6 @@ public class StaffCertificationServiceImpl implements StaffCertificationService 
 
     @Override
     public List<StaffCertificationDTO> getStaffCertificationByUserId(String userId) {
-
         List<StaffCertification> staffCertificationList = staffCertificationRepository.findByUserId(userId);
         return staffCertificationList.stream()
                 .map(staffCertification -> {
@@ -44,8 +43,7 @@ public class StaffCertificationServiceImpl implements StaffCertificationService 
                     staffCertificationDTO.setId(staffCertification.getId());
                     staffCertificationDTO.setUserId(staffCertification.getUserId());
                     staffCertificationDTO.setCertification(staffCertification.getCertification());
-
-
+                    staffCertificationDTO.setImage(staffCertification.getImage());
 
                     return staffCertificationDTO;
                 })
