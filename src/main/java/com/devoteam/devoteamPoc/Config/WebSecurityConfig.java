@@ -45,7 +45,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/staff-details").permitAll()
                         .requestMatchers(HttpMethod.POST, "/staff-details/details/manager").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/users/{userId}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "Staff-Certification/update/{id}").hasRole("STAFF")
+                        .requestMatchers(HttpMethod.PUT, "Staff-Certification/update/{id}").hasAnyRole("STAFF","MANAGER")
                         .requestMatchers(HttpMethod.GET, "propale/historique").hasAnyRole("COMMERCIAL","MANAGER")
 
 

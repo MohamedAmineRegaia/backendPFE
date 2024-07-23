@@ -46,6 +46,8 @@ public class PropaleDTO {
     private Date ReviewDate;
     private List<ProjectAssignmentDTO> projectAssignments;
 
+    private List<HistoryEntry> historyEntries;
+
 
     public Date getReviewDate() {
         return ReviewDate;
@@ -63,7 +65,6 @@ public class PropaleDTO {
         this.noGoDescription = noGoDescription;
     }
 
-    private List<HistoryEntry> historyEntries;
     public Long getId() {
         return id;
     }

@@ -57,7 +57,7 @@ public class Propale {
     @Column(name = "noGoReason")
     private String noGoReason;
 
-    @Column(name = "noGoDescription")
+    @Column(name = "noGoDescription",nullable = true)
     private String noGoDescription;
     @ElementCollection
     private List<HistoryEntry> historyEntries;

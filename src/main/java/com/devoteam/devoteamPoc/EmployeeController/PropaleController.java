@@ -3,6 +3,8 @@ package com.devoteam.devoteamPoc.EmployeeController;
 import com.devoteam.devoteamPoc.Dto.PropaleDTO;
 import com.devoteam.devoteamPoc.Entity.HistoryEntry;
 import com.devoteam.devoteamPoc.Service.PropaleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +23,15 @@ public class PropaleController {
 
     @Autowired
     private PropaleService propaleService;
+    private static final Logger logger = LoggerFactory.getLogger(PropaleController.class);
+
 
     @PostMapping("/ajouter")
     public ResponseEntity<String> ajouterPropale(@RequestBody PropaleDTO propaleDTO, Principal principal) {
+        logger.info("Received request to add Propale: {}", propaleDTO);
+
         String result = propaleService.addPropale(propaleDTO, principal.getName());
+        logger.info("Propale added with result: {}", result);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 

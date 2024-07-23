@@ -3,6 +3,7 @@ package com.devoteam.devoteamPoc.Service.impl;
 import com.devoteam.devoteamPoc.Dto.ProjectAssignmentDTO;
 import com.devoteam.devoteamPoc.Dto.PropaleDTO;
 import com.devoteam.devoteamPoc.EmployeeController.NotificationController;
+import com.devoteam.devoteamPoc.EmployeeController.PropaleController;
 import com.devoteam.devoteamPoc.Entity.HistoryEntry;
 import com.devoteam.devoteamPoc.Entity.ProjectAssignment;
 import com.devoteam.devoteamPoc.Entity.Propale;
@@ -15,6 +16,8 @@ import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -35,6 +38,8 @@ public class PropaleServiceIMPL implements PropaleService {
     @Value("testrealm")
     private String realm;
     private Keycloak keycloak;
+    private static final Logger logger = LoggerFactory.getLogger(PropaleController.class);
+
 
     private NotificationController notificationController;
 
@@ -57,6 +62,7 @@ public class PropaleServiceIMPL implements PropaleService {
     public String addPropale(PropaleDTO propaleDTO, String userId) {
         UserRepresentation userRepresentation = getUserById(userId);
         String fullName = userRepresentation.getFirstName() + " " + userRepresentation.getLastName();
+        logger.info("Processing addPropale for user: {}", userId);
 
         Propale propale = new Propale();
         propale.setUserId(userId);
@@ -80,17 +86,21 @@ public class PropaleServiceIMPL implements PropaleService {
         propale.setNoGoDescription(propaleDTO.getNoGoDescription());
         propale.setReviewDate(propaleDTO.getReviewDate());
 
+        // Ne pas initialiser les attributs historyEntries et projectAssignments
+        // propale.setHistoryEntries(null);  // Par défaut, ces attributs sont null, donc pas besoin de les définir explicitement
 
-        HistoryEntry entry = new HistoryEntry();
-        entry.setAction("ajoute");
-        entry.setUser(fullName);
-        entry.setTimestamp(new Date());
-        entry.setPropaleName(propaleDTO.getPropaleName());
+        // Ajouter un HistoryEntry seulement si nécessaire
+        if (propale.getHistoryEntries() == null) {
+            HistoryEntry entry = new HistoryEntry();
+            entry.setAction("was added");
+            entry.setUser(fullName);
+            entry.setTimestamp(new Date());
+            entry.setPropaleName(propaleDTO.getPropaleName());
 
-        List<HistoryEntry> history = new ArrayList<>();
-        history.add(entry);
-        propale.setHistoryEntries(history);
-
+            List<HistoryEntry> history = new ArrayList<>();
+            history.add(entry);
+            propale.setHistoryEntries(history);
+        }
 
         propaleRepository.save(propale);
         return "Propale added";
@@ -229,7 +239,7 @@ public class PropaleServiceIMPL implements PropaleService {
     private void addHistoryEntryIfChanged(List<HistoryEntry> history, String field, Object oldValue, Object newValue, String user, String propaleName) {
         if ((oldValue != null && !oldValue.equals(newValue)) || (oldValue == null && newValue != null)) {
             HistoryEntry entry = new HistoryEntry();
-            entry.setAction(field + " a été modifié");
+            entry.setAction(field + " was modified");
             entry.setUser(user);
             entry.setTimestamp(new Date());
             entry.setPropaleName(propaleName);
@@ -312,7 +322,6 @@ public class PropaleServiceIMPL implements PropaleService {
         }
     }
 
-    @Override
     public String assignUserToProject(Long propaleId, String userId) {
         Optional<Propale> propaleOptional = propaleRepository.findById(propaleId);
         UserRepresentation userRepresentation = getUserById(userId);
@@ -330,12 +339,14 @@ public class PropaleServiceIMPL implements PropaleService {
             propaleRepository.save(propale);
 
             notificationController.notifyUser(userId, "You have been assigned to a new project.");
+            System.out.println("Notification sent to user: " + userId);
 
             return "User assigned to project successfully.";
         } else {
             throw new NoSuchElementException("Propale or User not found.");
         }
     }
+
 
 
     @Override

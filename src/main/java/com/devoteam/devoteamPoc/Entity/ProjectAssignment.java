@@ -1,5 +1,6 @@
 package com.devoteam.devoteamPoc.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.Date;
@@ -13,7 +14,7 @@ public class ProjectAssignment {
 
     @ManyToOne
     @JoinColumn(name = "propale_id", nullable = false)
-    @JsonManagedReference
+    @JsonBackReference
     private Propale propale;
 
     @Column(name = "user_id", nullable = false)
